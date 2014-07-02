@@ -11,34 +11,47 @@ GRAMMAR = {
 
 
 class BrainfuckArray(object):
+    """Internal representation for the 30,000 byte brainfuck array,
+    implemented like a sparse array.
+
+    Attributes:
+        data (dict): index -> value
+        pointer (int): current index
+    """
 
     def __init__(self):
-        self.data = {}
-        self.pointer = 0
+        self._data = {}
+        self._pointer = 0
 
     def __repr__(self):
-        return repr(self.data)
+        return repr(self._data)
+
+    def get_pointer(self):
+        return self._pointer
+
+    def get_data(self):
+        return self._data
 
     def increment_pointer(self):
-        if self.pointer < 30000:
-            self.pointer += 1
+        if self._pointer < 30000:
+            self._pointer += 1
         else:
             raise IndexError("pointer out of bounds")
 
     def decrement_pointer(self):
-        if self.pointer > 0:
-            self.pointer -= 1
+        if self._pointer > 0:
+            self._pointer -= 1
         else:
             raise IndexError("pointer out of bounds")
 
     def increment_byte(self):
-        self.data[self.pointer] = self.data.get(self.pointer, 0) + 1 % 256
+        self._data[self._pointer] = self._data.get(self._pointer, 0) + 1 % 256
 
     def decrement_byte(self):
-        self.data[self.pointer] = self.data.get(self.pointer, 0) - 1 % 256
+        self._data[self._pointer] = self._data.get(self._pointer, 0) - 1 % 256
 
     def output_byte(self):
-        print self.data.get(self.pointer, 0)
+        print self._data.get(self._pointer, 0)
 
 
 def tokenize(source):
