@@ -38,7 +38,10 @@ class IncrementByteTest(BrainfuckTest, unittest.TestCase):
 
 
 class DecrementByteTest(BrainfuckTest, unittest.TestCase):
-    pass
+
+    def test(self):
+        self.bf.decrement_byte()
+        self.assertEqual(self.bf.get_data()[0], 255)
 
 
 if __name__ == '__main__':
