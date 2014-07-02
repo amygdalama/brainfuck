@@ -18,6 +18,7 @@ class IncrementPointerTest(BrainfuckTest, unittest.TestCase):
         self.bf._pointer = self.bf.get_bytes() - 1
         self.assertRaises(IndexError, self.bf.increment_pointer)
 
+
 class DecrementPointerTest(BrainfuckTest, unittest.TestCase):
 
     def test(self):
@@ -27,6 +28,17 @@ class DecrementPointerTest(BrainfuckTest, unittest.TestCase):
 
     def test_out_of_bounds(self):
         self.assertRaises(IndexError, self.bf.decrement_pointer)
+
+
+class IncrementByteTest(BrainfuckTest, unittest.TestCase):
+
+    def test(self):
+        self.bf.increment_byte()
+        self.assertEqual(self.bf.get_data()[0], 1)
+
+
+class DecrementByteTest(BrainfuckTest, unittest.TestCase):
+    pass
 
 
 if __name__ == '__main__':
