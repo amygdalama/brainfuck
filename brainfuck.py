@@ -10,6 +10,28 @@ GRAMMAR = {
 }
 
 
+class BrainfuckArray(object):
+
+    def __init__(self):
+        self.data = {}
+        self.pointer = 0
+
+    def __getitem__(self, index):
+        return self.data.get(index, 0)
+
+    def increment_pointer(self):
+        if self.pointer < 30000:
+            self.pointer += 1
+        else:
+            raise IndexError("pointer out of bounds")
+
+    def decrement_pointer(self):
+        if self.pointer > 0:
+            self.pointer -= 1
+        else:
+            raise IndexError("pointer out of bounds")
+
+
 def tokenize(source):
     """Tokenizes brainfuck source code.
 
@@ -23,6 +45,7 @@ def tokenize(source):
 
 
 if __name__ == '__main__':
+    bf = BrainfuckArray()
     print tokenize("""++++++++[>++++[>++>+++>+++>+<<<<-]
             >+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.
             +++.------.--------.>>+.>++.""")
