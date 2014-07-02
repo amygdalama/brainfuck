@@ -19,9 +19,11 @@ class BrainfuckArray(object):
         pointer (int): current index
     """
 
-    def __init__(self):
+    def __init__(self, bytes=30000, bits=8):
         self._data = {}
         self._pointer = 0
+        self._bytes = bytes
+        self._bits = bits
 
     def __repr__(self):
         return repr(self._data)
@@ -32,8 +34,14 @@ class BrainfuckArray(object):
     def get_data(self):
         return self._data
 
+    def get_bytes(self):
+        return self._bytes
+
+    def get_bits(self):
+        return self._bits
+
     def increment_pointer(self):
-        if self._pointer < 30000:
+        if self._pointer < 29999:
             self._pointer += 1
         else:
             raise IndexError("pointer out of bounds")
