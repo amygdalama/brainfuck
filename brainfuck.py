@@ -53,10 +53,10 @@ class BrainfuckArray(object):
             raise IndexError("pointer out of bounds")
 
     def increment_byte(self):
-        self._data[self._pointer] = self._data.get(self._pointer, 0) + 1 % 256
+        self._data[self._pointer] = (self._data.get(self._pointer, 0) + 1) % 256
 
     def decrement_byte(self):
-        self._data[self._pointer] = self._data.get(self._pointer, 0) - 1 % 256
+        self._data[self._pointer] = (self._data.get(self._pointer, 0) - 1) % 256
 
     def output_byte(self):
         print self._data.get(self._pointer, 0)
