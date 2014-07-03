@@ -9,11 +9,11 @@ class BrainfuckArrayTest(object):
     def setUp(self):
         self.array = brainfuck.BrainfuckArray()
 
-
-class InvalidKeyTest(BrainfuckArrayTest, unittest.TestCase):
-
     def add_item(self, key, value):
         self.array[key] = value
+
+
+class InvalidKeyTest(BrainfuckArrayTest, unittest.TestCase):
 
     def test_non_int(self):
         self.assertRaises(TypeError, self.add_item, 'cat', 0)
