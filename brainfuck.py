@@ -82,6 +82,9 @@ class BrainfuckExec(object):
             raise ValueError("only one character per byte")
         self._data[self._pointer] = ord(byte)
 
+    def execute(self, command):
+        pass
+
 
 def parse(tokens):
     """Parse the brainfuck tokens.
@@ -95,9 +98,9 @@ def parse(tokens):
     loop_map = {}
     stack = []
     for i, token in enumerate(tokens):
-        if token == '[':
+        if token == 'JUMP_FORWARD':
             stack.append(i)
-        elif token == ']':
+        elif token == 'JUMP_BACKWARD':
             if stack:
                 beginning_index = stack.pop()
                 loop_map[beginning_index] = i
@@ -117,7 +120,7 @@ def tokenize(source):
     Returns:
         list: a list of valid brainfuck characters
     """
-    return [ch for ch in source if ch in GRAMMAR]
+    return [GRAMMAR[ch] for ch in source if ch in GRAMMAR]
 
 
 if __name__ == '__main__':
