@@ -25,6 +25,12 @@ class InvalidKeyTest(BrainfuckArrayTest, unittest.TestCase):
         self.assertRaises(IndexError, self.add_item, -1, 0)
 
 
+class InvalidValueTest(BrainfuckArrayTest, unittest.TestCase):
+
+    def test_non_int(self):
+        self.assertRaises(TypeError, self.add_item, 0, 'cat')
+
+
 class BrainfuckTest(object):
 
     def setUp(self):
