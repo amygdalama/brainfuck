@@ -1,13 +1,4 @@
-GRAMMAR = {
-    '>' : 'INCREMENT_POINTER',
-    '<' : 'DECREMENT_POINTER',
-    '+' : 'INCREMENT_BYTE',
-    '-' : 'DECREMENT_BYTE',
-    '.' : 'OUTPUT_BYTE',
-    ',' : 'INPUT_BYTE',
-    '[' : 'JUMP_FORWARD',
-    ']' : 'JUMP_BACKWARD'
-}
+import sys
 
 
 class BrainfuckError(SyntaxError): pass
@@ -39,7 +30,7 @@ class BrainfuckArray(dict):
         return 0
 
 
-class BrainfuckExec(object):
+class BrainfuckInterpreter(object):
     """Execution of brainfuck interpreter.
 
     Attributes:
@@ -50,7 +41,17 @@ class BrainfuckExec(object):
     def __init__(self):
         self._data = BrainfuckArray()
         self._pointer = 0
-        self._tokens = {
+        self._grammar = {
+            '>' : 'INCREMENT_POINTER',
+            '<' : 'DECREMENT_POINTER',
+            '+' : 'INCREMENT_BYTE',
+            '-' : 'DECREMENT_BYTE',
+            '.' : 'OUTPUT_BYTE',
+            ',' : 'INPUT_BYTE',
+            '[' : 'JUMP_FORWARD',
+            ']' : 'JUMP_BACKWARD'
+        }
+        self._exec_tokens = {
             'INCREMENT_POINTER' : self.increment_pointer,
             'DECREMENT_POINTER' : self.decrement_pointer,
             'INCREMENT_BYTE' : self.increment_byte,
@@ -83,7 +84,7 @@ class BrainfuckExec(object):
         self._data[self._pointer] -= 1
 
     def output_byte(self):
-        print chr(self._data.get(self._pointer, 0)),
+        sys.stdout.write(chr(self._data.get(self._pointer, 0)))
 
     def input_byte(self):
         # I don't like this
@@ -91,6 +92,34 @@ class BrainfuckExec(object):
         if len(byte) > 1:
             raise ValueError("only one character per byte")
         self._data[self._pointer] = ord(byte)
+
+    def tokenize(self, source):
+        """Tokenizes brainfuck source code."""
+        return [self._grammar[ch] for ch in source if ch in self._grammar]
+
+    def parse(self, tokens):
+        """Parse the brainfuck tokens.
+
+        Args:
+            tokens (list): tokens, output from tokenize function
+
+        Returns:
+            dict: mapping the indexes of [ to their corresponding ]
+        """
+        loop_map = {}
+        stack = []
+        for i, token in enumerate(tokens):
+            if token == 'JUMP_FORWARD':
+                stack.append(i)
+            elif token == 'JUMP_BACKWARD':
+                if stack:
+                    beginning_index = stack.pop()
+                    loop_map[beginning_index] = i
+                else:
+                    raise BrainfuckError("unexpected ]")
+        if stack:
+            raise BrainfuckError("missing ]")
+        return loop_map
 
     def execute(self, tokens, loop_map):
         program_loc = 0
@@ -104,55 +133,18 @@ class BrainfuckExec(object):
                     stack.append(program_loc)
             elif token == 'JUMP_BACKWARD':
                 program_loc = stack.pop() - 1
-            elif token in self._tokens:
-                self._tokens[token]()
+            elif token in tokens:
+                self._exec_tokens[token]()
             else:
                 raise BrainfuckError("invalid token")
             program_loc += 1
 
 
-def parse(tokens):
-    """Parse the brainfuck tokens.
-
-    Args:
-        tokens (list): tokens, output from tokenize function
-
-    Returns:
-        dict: mapping the indexes of [ to their corresponding ]
-    """
-    loop_map = {}
-    stack = []
-    for i, token in enumerate(tokens):
-        if token == 'JUMP_FORWARD':
-            stack.append(i)
-        elif token == 'JUMP_BACKWARD':
-            if stack:
-                beginning_index = stack.pop()
-                loop_map[beginning_index] = i
-            else:
-                raise BrainfuckError("unexpected ]")
-    if stack:
-        raise BrainfuckError("missing ]")
-    return loop_map
-
-
-def tokenize(source):
-    """Tokenizes brainfuck source code.
-
-    Args:
-        source (string): brainfuck source code
-
-    Returns:
-        list: a list of valid brainfuck characters
-    """
-    return [GRAMMAR[ch] for ch in source if ch in GRAMMAR]
-
-
 if __name__ == '__main__':
-    tokens = tokenize("""++++++++[>++++[>++>+++>+++>+<<<<-]
+    source = """++++++++[>++++[>++>+++>+++>+<<<<-]
             >+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.
-            +++.------.--------.>>+.>++.""")
-    print tokens
-    loop_map = parse(tokens)
-    bf = BrainfuckExec()
+            +++.------.--------.>>+.>++."""
+    bf = BrainfuckInterpreter()
+    tokens = bf.tokenize(source)
+    loop_map = bf.parse(tokens)
     bf.execute(tokens, loop_map)
