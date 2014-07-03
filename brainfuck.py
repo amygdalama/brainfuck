@@ -19,10 +19,18 @@ class BrainfuckArray(dict):
         super(BrainfuckArray, self).__init__()
 
     def __setitem__(self, key, value):
-        if isinstance(value, int) and 0 <= value < 256:
-            super(BrainfuckArray, self).__setitem__(key, value)
+        if not isinstance(key, int):
+            raise TypeError("keys can only be ints from 0-29999")
+        elif not 0 <= key < 30000:
+            raise IndexError("keys can only be ints from 0-29999")
+        elif not isinstance(value, int):
+            raise TypeError("values must be ints")
         else:
-            raise TypeError("only integers from 0-255 can be stored")
+            super(BrainfuckArray, self).__setitem__(key, value % 256)
+
+    def __missing__(self, key):
+        self.__setitem__(key, 0)
+        return 0
 
 
 class BrainfuckExec(object):
@@ -67,10 +75,10 @@ class BrainfuckExec(object):
             raise IndexError("pointer out of bounds")
 
     def increment_byte(self):
-        self._data[self._pointer] = (self._data.get(self._pointer, 0) + 1) % 256
+        self._data[self._pointer] += 1
 
     def decrement_byte(self):
-        self._data[self._pointer] = (self._data.get(self._pointer, 0) - 1) % 256
+        self._data[self._pointer] -= 1
 
     def output_byte(self):
         print chr(self._data.get(self._pointer, 0))
