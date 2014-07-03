@@ -58,16 +58,10 @@ class BrainfuckExec(object):
         return self._data
 
     def increment_pointer(self):
-        if self._pointer < 29999:
-            self._pointer += 1
-        else:
-            raise IndexError("pointer out of bounds")
+        self._pointer += 1
 
     def decrement_pointer(self):
-        if self._pointer > 0:
-            self._pointer -= 1
-        else:
-            raise IndexError("pointer out of bounds")
+        self._pointer -= 1
 
     def increment_byte(self):
         self._data[self._pointer] += 1

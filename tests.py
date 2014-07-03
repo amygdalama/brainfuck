@@ -3,7 +3,30 @@ import unittest
 import brainfuck
 
 
+
+class BrainfuckArrayTest(object):
+
+    def setUp(self):
+        self.array = brainfuck.BrainfuckArray()
+
+
+class InvalidKeyTest(BrainfuckArrayTest, unittest.TestCase):
+
+    def add_item(self, key, value):
+        self.array[key] = value
+
+    def test_non_int(self):
+        self.assertRaises(TypeError, self.add_item, 'cat', 0)
+
+    def test_too_high(self):
+        self.assertRaises(IndexError, self.add_item, 30000, 0)
+
+    def test_too_low(self):
+        self.assertRaises(IndexError, self.add_item, -1, 0)
+
+
 class BrainfuckTest(object):
+
     def setUp(self):
         self.bf = brainfuck.BrainfuckExec()
 
@@ -14,10 +37,6 @@ class IncrementPointerTest(BrainfuckTest, unittest.TestCase):
         self.bf.increment_pointer()
         self.assertEqual(self.bf.get_pointer(), 1)
 
-    def test_out_of_bounds(self):
-        self.bf._pointer = 29999
-        self.assertRaises(IndexError, self.bf.increment_pointer)
-
 
 class DecrementPointerTest(BrainfuckTest, unittest.TestCase):
 
@@ -25,9 +44,6 @@ class DecrementPointerTest(BrainfuckTest, unittest.TestCase):
         self.bf.increment_pointer()
         self.bf.decrement_pointer()
         self.assertEqual(self.bf.get_pointer(), 0)
-
-    def test_out_of_bounds(self):
-        self.assertRaises(IndexError, self.bf.decrement_pointer)
 
 
 class IncrementByteTest(BrainfuckTest, unittest.TestCase):
