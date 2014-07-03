@@ -10,9 +10,23 @@ GRAMMAR = {
 }
 
 
-class BrainfuckArray(object):
-    """Internal representation for the 30,000 byte brainfuck array,
-    implemented like a sparse array.
+class BrainfuckArray(dict):
+    """An dictionary representing a sparse array of length 30,000
+    with indices as keys, and integers representing 8-bit characters
+    as values."""
+
+    def __init__(self):
+        super(BrainfuckArray, self).__init__()
+
+    def __setitem__(self, key, value):
+        if isinstance(value, int) and 0 <= value < 256:
+            super(BrainfuckArray, self).__setitem__(key, value)
+        else:
+            raise TypeError("only integers from 0-255 can be stored")
+
+
+class BrainfuckExec(object):
+    """Execution of brainfuck interpreter.
 
     Attributes:
         data (dict): index -> value
@@ -20,7 +34,7 @@ class BrainfuckArray(object):
     """
 
     def __init__(self, bytes=30000, bits=8):
-        self._data = {}
+        self._data = BrainfuckArray()
         self._pointer = 0
         self._bytes = bytes
         self._bits = bits
@@ -59,7 +73,13 @@ class BrainfuckArray(object):
         self._data[self._pointer] = (self._data.get(self._pointer, 0) - 1) % 256
 
     def output_byte(self):
-        print self._data.get(self._pointer, 0)
+        print chr(self._data.get(self._pointer, 0))
+
+    def input_byte(self):
+        byte = raw_input()
+        if len(byte) > 1:
+            raise ValueError("only one character per byte")
+        self._data[self._pointer] = ord(byte)
 
 
 def tokenize(source):
@@ -75,7 +95,7 @@ def tokenize(source):
 
 
 if __name__ == '__main__':
-    bf = BrainfuckArray()
+    bf = BrainfuckExec()
     print bf
     bf.increment_byte()
     bf.increment_byte()
@@ -83,6 +103,8 @@ if __name__ == '__main__':
     bf.increment_pointer()
     bf.increment_byte()
     print bf
+    bf.input_byte()
+    bf.output_byte()
     print tokenize("""++++++++[>++++[>++>+++>+++>+<<<<-]
             >+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.
             +++.------.--------.>>+.>++.""")

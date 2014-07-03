@@ -5,7 +5,7 @@ import brainfuck
 
 class BrainfuckTest(object):
     def setUp(self):
-        self.bf = brainfuck.BrainfuckArray()
+        self.bf = brainfuck.BrainfuckExec()
 
 
 class IncrementPointerTest(BrainfuckTest, unittest.TestCase):
