@@ -73,6 +73,7 @@ class BrainfuckExec(object):
         print chr(self._data.get(self._pointer, 0))
 
     def input_byte(self):
+        # I don't like this
         byte = raw_input()
         if len(byte) > 1:
             raise ValueError("only one character per byte")
