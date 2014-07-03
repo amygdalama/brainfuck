@@ -31,6 +31,12 @@ class InvalidValueTest(BrainfuckArrayTest, unittest.TestCase):
         self.assertRaises(TypeError, self.add_item, 0, 'cat')
 
 
+class ValidTest(BrainfuckArrayTest, unittest.TestCase):
+
+    def test_zero_default(self):
+        self.assertEqual(self.array[0], 0)
+
+
 class BrainfuckTest(object):
 
     def setUp(self):
