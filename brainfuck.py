@@ -15,18 +15,21 @@ class BrainfuckArray(dict):
     with indices as keys, and integers representing 8-bit characters
     as values."""
 
-    def __init__(self):
+    def __init__(self, bytes=30000, bits=8):
+        self.bytes = bytes
+        self.bits = bits
         super(BrainfuckArray, self).__init__()
 
     def __setitem__(self, key, value):
         if not isinstance(key, int):
             raise TypeError("keys can only be ints from 0-29999")
-        elif not 0 <= key < 30000:
+        elif not 0 <= key < self.bytes:
             raise IndexError("keys can only be ints from 0-29999")
         elif not isinstance(value, int):
             raise TypeError("values must be ints")
         else:
-            super(BrainfuckArray, self).__setitem__(key, value % 256)
+            super(BrainfuckArray, self).__setitem__(key,
+                    value % (2**self.bits))
 
     def __missing__(self, key):
         self.__setitem__(key, 0)
@@ -41,11 +44,9 @@ class BrainfuckExec(object):
         pointer (int): current index
     """
 
-    def __init__(self, bytes=30000, bits=8):
+    def __init__(self):
         self._data = BrainfuckArray()
         self._pointer = 0
-        self._bytes = bytes
-        self._bits = bits
 
     def __repr__(self):
         return repr(self._data)
@@ -55,12 +56,6 @@ class BrainfuckExec(object):
 
     def get_data(self):
         return self._data
-
-    def get_bytes(self):
-        return self._bytes
-
-    def get_bits(self):
-        return self._bits
 
     def increment_pointer(self):
         if self._pointer < 29999:

@@ -15,7 +15,7 @@ class IncrementPointerTest(BrainfuckTest, unittest.TestCase):
         self.assertEqual(self.bf.get_pointer(), 1)
 
     def test_out_of_bounds(self):
-        self.bf._pointer = self.bf.get_bytes() - 1
+        self.bf._pointer = 29999
         self.assertRaises(IndexError, self.bf.increment_pointer)
 
 
