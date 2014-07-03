@@ -10,6 +10,9 @@ GRAMMAR = {
 }
 
 
+class BrainfuckError(SyntaxError): pass
+
+
 class BrainfuckArray(dict):
     """An dictionary representing a sparse array of length 30,000
     with indices as keys, and integers representing 8-bit characters
@@ -80,6 +83,31 @@ class BrainfuckExec(object):
         self._data[self._pointer] = ord(byte)
 
 
+def parse(tokens):
+    """Parse the brainfuck tokens.
+
+    Args:
+        tokens (list): tokens, output from tokenize function
+
+    Returns:
+        dict: mapping the indexes of [ to their corresponding ]
+    """
+    loop_map = {}
+    stack = []
+    for i, token in enumerate(tokens):
+        if token == '[':
+            stack.append(i)
+        elif token == ']':
+            if stack:
+                beginning_index = stack.pop()
+                loop_map[beginning_index] = i
+            else:
+                raise BrainfuckError("unexpected ]")
+    if stack:
+        raise BrainfuckError("missing ]")
+    return loop_map
+
+
 def tokenize(source):
     """Tokenizes brainfuck source code.
 
@@ -93,16 +121,9 @@ def tokenize(source):
 
 
 if __name__ == '__main__':
-    bf = BrainfuckExec()
-    print bf
-    bf.increment_byte()
-    bf.increment_byte()
-    bf.decrement_byte()
-    bf.increment_pointer()
-    bf.increment_byte()
-    print bf
-    bf.input_byte()
-    bf.output_byte()
-    print tokenize("""++++++++[>++++[>++>+++>+++>+<<<<-]
+    tokens = tokenize("""++++++++[>++++[>++>+++>+++>+<<<<-]
             >+>+>->>+[<]<-]>>.>---.+++++++..+++.>>.<-.<.
             +++.------.--------.>>+.>++.""")
+    print tokens
+    loop_map = parse(tokens)
+    print loop_map
