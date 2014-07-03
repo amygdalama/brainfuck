@@ -3,7 +3,6 @@ import unittest
 import brainfuck
 
 
-
 class BrainfuckArrayTest(object):
 
     def setUp(self):
@@ -35,6 +34,10 @@ class ValidTest(BrainfuckArrayTest, unittest.TestCase):
 
     def test_zero_default(self):
         self.assertEqual(self.array[0], 0)
+
+    def test_existing_key(self):
+        self.array[100] = 100
+        self.assertEqual(self.array[100], 100)
 
 
 class BrainfuckTest(object):
