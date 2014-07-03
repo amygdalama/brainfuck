@@ -50,6 +50,16 @@ class BrainfuckExec(object):
     def __init__(self):
         self._data = BrainfuckArray()
         self._pointer = 0
+        self._tokens = {
+            'INCREMENT_POINTER' : self.increment_pointer,
+            'DECREMENT_POINTER' : self.decrement_pointer,
+            'INCREMENT_BYTE' : self.increment_byte,
+            'DECREMENT_BYTE' : self.decrement_byte,
+            'OUTPUT_BYTE' : self.output_byte,
+            'INPUT_BYTE' : self.input_byte,
+            'JUMP_FORWARD' : None,
+            'JUMP_BACKWARD' : None
+        }
 
     def __repr__(self):
         return repr(self._data)
@@ -73,7 +83,7 @@ class BrainfuckExec(object):
         self._data[self._pointer] -= 1
 
     def output_byte(self):
-        print chr(self._data.get(self._pointer, 0))
+        print chr(self._data.get(self._pointer, 0)),
 
     def input_byte(self):
         # I don't like this
@@ -82,8 +92,23 @@ class BrainfuckExec(object):
             raise ValueError("only one character per byte")
         self._data[self._pointer] = ord(byte)
 
-    def execute(self, command):
-        pass
+    def execute(self, tokens, loop_map):
+        program_loc = 0
+        stack = []
+        while program_loc < len(tokens):
+            token = tokens[program_loc]
+            if token == 'JUMP_FORWARD':
+                if self._data[self._pointer] == 0:
+                    program_loc = loop_map[program_loc]
+                else:
+                    stack.append(program_loc)
+            elif token == 'JUMP_BACKWARD':
+                program_loc = stack.pop() - 1
+            elif token in self._tokens:
+                self._tokens[token]()
+            else:
+                raise BrainfuckError("invalid token")
+            program_loc += 1
 
 
 def parse(tokens):
@@ -129,4 +154,5 @@ if __name__ == '__main__':
             +++.------.--------.>>+.>++.""")
     print tokens
     loop_map = parse(tokens)
-    print loop_map
+    bf = BrainfuckExec()
+    bf.execute(tokens, loop_map)
